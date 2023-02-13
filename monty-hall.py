@@ -19,7 +19,7 @@ def print_doors(selection = [], goat=[], win = []):
 
     if len(selection) > 0:
         selection_list[selection[0]] = "^"
-        print("{}   {}   {}".format(selection_list[0],selection_list[1],selection_list[2]))
+        print("{}    {}     {}".format(selection_list[0],selection_list[1],selection_list[2]))
 
 
 def monty_hall_helper_manual(evil = False):
@@ -41,27 +41,28 @@ def monty_hall_helper_manual(evil = False):
                 continue
             else:
                 break
-        reveal = choice([i for i in range(0,3) if i not in [selection, prize]])
-        print_doors(selection = [selection])
-        print("The prize is not behind door {}".format(reveal))
-        print_doors(selection = [selection], goat=[reveal])
-        if reveal + selection == 1:
-            remaining = 2
-        elif reveal + selection == 2:
-            remaining = 1
-        elif reveal + selection == 3:
-            remaining = 0
-        else:
-            print("error")
-        while True:
-            val = input("Do you want to swap to door {} ? y/n ".format(remaining))
-            if val == "y" or val =="yes":
-                selection = remaining
-                break
-            elif val =="n" or val =="no":
-                break
+        if not evil or prize == selection:
+            reveal = choice([i for i in range(0,3) if i not in [selection, prize]])
+            print_doors(selection = [selection])
+            print("Surprise! The host revealed that the prize is not behind door {}".format(reveal))
+            print_doors(selection = [selection], goat=[reveal])
+            if reveal + selection == 1:
+                remaining = 2
+            elif reveal + selection == 2:
+                remaining = 1
+            elif reveal + selection == 3:
+                remaining = 0
             else:
-                print("invalid response.")
+                print("error")
+            while True:
+                val = input("Do you want to swap to door {} ? y/n ".format(remaining))
+                if val == "y" or val =="yes":
+                    selection = remaining
+                    break
+                elif val =="n" or val =="no":
+                    break
+                else:
+                    print("invalid response.")
         if selection == prize:
             print("\nYOU WON!!! Prize was in door {} ".format(prize))
             wins +=1
@@ -70,7 +71,7 @@ def monty_hall_helper_manual(evil = False):
             print_doors(win=[prize], goat=[selection,reveal])
         print_doors(selection = [selection], win=[prize])
         trials +=1
-        val = input("play again? y/n ")
+        val = input("Play again? y/n ")
         if val == "y" or val =="yes":
             continue
         else:
@@ -100,19 +101,21 @@ def monty_hall_helper_auto(swap):
     return (wins,trials)
     
 def monty_hall(): 
-    style = input("would you like to play manually or automatically?")
-    if style =="m" or style =="man" or style =="manual" or style =="manually":
+    style = input("Would you like to play traditionally (1) run a simulation (2), or try against an evil host (3)?\n ")
+    if style == "1":
         win, trials = monty_hall_helper_manual()
-    else:
+    elif style == "2":
         swap = input("Do you want the computer to swap when prompted? y/n")
         if swap == "y" or swap =="yes":
             win, trials = monty_hall_helper_auto(True)
         else:
             win, trials = monty_hall_helper_auto(False)
+    elif style == "3":
+        win, trials = monty_hall_helper_manual(evil = True)
 
     
     if(trials > 0):    
-        print("You won : {} out of {} times, or {} ".format(win, trials, win/trials))
+        print("You won : {} out of {} times, or {} %".format(win, trials, win/trials))
     else:
         print("You didn't play. :(")
     
